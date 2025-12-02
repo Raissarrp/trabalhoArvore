@@ -18,9 +18,17 @@ public class teste {
         tree.PreOrdem();
         System.out.println("\nPós-ordem (Post-order) -> Ordem: Esquerda -> Direita -> Raiz");
         tree.PostOrdem();
-        //tree.printRootLeftRight();
         tree.delete(3);
         tree.EmOrdem();
         tree.delete(10);
+
+        System.out.println();
+        System.out.println("Altura da árvore (nós no maior caminho raiz-folha): " + tree.altura());
+        System.out.println("Profundidade do nó 7 (arestas da raiz): " + tree.profundidade(7));
+
+        System.out.println("Caminho da raiz até 7: " + tree.caminhoDaRaizA(7));
+        System.out.println("Caminho da raiz até 5: " + tree.caminhoDaRaizA(5));
+        System.out.println("Caminho entre 1 e 9: " + tree.caminhoEntreNos(1, 9));
+        System.out.println("Ancestral comum mais próximo de 7 e 9: " + tree.ancestralComumMaisProximo(7, 9));
     }
 }

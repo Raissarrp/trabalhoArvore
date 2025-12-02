@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class arvoreBinaria {
 
     NoArvore root;
@@ -73,7 +76,6 @@ public class arvoreBinaria {
         }
     }
 
-    
     public void delete(int value) {
         this.root = deleteRec(this.root, value);
     }
@@ -111,5 +113,115 @@ public class arvoreBinaria {
             no = no.esquerda;
         }
         return minv;
+    }
+
+    // Verifica se um valor existe na árvore
+    private boolean containsRec(NoArvore no, int valor) {
+        if (no == null)
+            return false;
+        if (valor == no.valor)
+            return true;
+        if (valor < no.valor)
+            return containsRec(no.esquerda, valor);
+        return containsRec(no.direita, valor);
+    }
+
+    // Caminho da raiz até um nó (retorna lista de inteiros ou null se não
+    // encontrado)
+    public List<Integer> caminhoDaRaizA(int valor) {
+        List<Integer> path = new ArrayList<>();
+        if (caminhoRec(this.root, valor, path))
+            return path;
+        return null;
+    }
+
+    private boolean caminhoRec(NoArvore no, int valor, List<Integer> path) {
+        if (no == null)
+            return false;
+        path.add(no.valor);
+        if (no.valor == valor)
+            return true;
+        if (valor < no.valor) {
+            if (caminhoRec(no.esquerda, valor, path))
+                return true;
+        } else {
+            if (caminhoRec(no.direita, valor, path))
+                return true;
+        }
+        // não encontrado neste ramo, remover este nó do caminho
+        path.remove(path.size() - 1);
+        return false;
+    }
+
+    // Caminho entre dois nós distintos (retorna lista ou null se algum não existir)
+    public List<Integer> caminhoEntreNos(int a, int b) {
+        List<Integer> pa = caminhoDaRaizA(a);
+        List<Integer> pb = caminhoDaRaizA(b);
+        if (pa == null || pb == null)
+            return null;
+
+        int i = 0;
+        int min = Math.min(pa.size(), pb.size());
+        while (i < min && pa.get(i).equals(pb.get(i)))
+            i++;
+        int lcaIndex = i - 1; // índice do LCA em ambas as listas
+
+        List<Integer> path = new ArrayList<>();
+        // adicionar de 'a' até o LCA (incluir LCA)
+        for (int j = pa.size() - 1; j >= lcaIndex; j--) {
+            path.add(pa.get(j));
+        }
+        // adicionar do filho após LCA até 'b'
+        for (int j = lcaIndex + 1; j < pb.size(); j++) {
+            path.add(pb.get(j));
+        }
+        return path;
+    }
+
+    // Altura da árvore (número de nós no maior caminho raiz-folha)
+    public int altura() {
+        return alturaRec(this.root);
+    }
+
+    private int alturaRec(NoArvore no) {
+        if (no == null)
+            return 0;
+        int le = alturaRec(no.esquerda);
+        int ld = alturaRec(no.direita);
+        return 1 + Math.max(le, ld);
+    }
+
+    // Profundidade (distância em arestas da raiz até o nó; retorna -1 se não
+    // encontrar)
+    public int profundidade(int valor) {
+        return profundidadeRec(this.root, valor, 0);
+    }
+
+    private int profundidadeRec(NoArvore no, int valor, int nivel) {
+        if (no == null)
+            return -1;
+        if (no.valor == valor)
+            return nivel;
+        if (valor < no.valor)
+            return profundidadeRec(no.esquerda, valor, nivel + 1);
+        return profundidadeRec(no.direita, valor, nivel + 1);
+    }
+
+    // Ancestral comum mais próximo (LCA) usando propriedades de BST
+    public Integer ancestralComumMaisProximo(int a, int b) {
+        if (!containsRec(this.root, a) || !containsRec(this.root, b))
+            return null;
+        NoArvore lca = lcaRec(this.root, a, b);
+        return lca == null ? null : lca.valor;
+    }
+
+    private NoArvore lcaRec(NoArvore no, int a, int b) {
+        if (no == null)
+            return null;
+        if (a < no.valor && b < no.valor)
+            return lcaRec(no.esquerda, a, b);
+        if (a > no.valor && b > no.valor)
+            return lcaRec(no.direita, a, b);
+        return no;
     }
 }
